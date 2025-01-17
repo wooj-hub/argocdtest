@@ -1,42 +1,25 @@
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: express
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-deployment
-  namespace: express
+  name: hpa-load-test
   labels:
-    app: web
+    app: hpa-load
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
-      app: web
+      app: hpa-load
   template:
     metadata:
       labels:
-        app: web
+        app: hpa-load
     spec:
       containers:
-      - name: nginx
-        image: nginx
-        ports:
-        - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: web-service
-  namespace: express
-spec:
-  selector:
-    app: web
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
+        - name: hpa-load
+          image: busybox
+          command: ["sh", "-c", "while true; do :; done"]
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
